@@ -1,7 +1,7 @@
 /*
  * @Author: liushuhao
  * @Date: 2020-08-15 20:30:43
- * @LastEditTime: 2020-08-16 23:32:27
+ * @LastEditTime: 2020-08-16 23:54:28
  * @LastEditors: liushuhao
  * @Description: 
  * @FilePath: /test-koa/app.js
@@ -26,8 +26,6 @@ const config = require('./config')
 const routes = require('./routes')
 
 const userrouter = require('./routes/users')
-
-
 
 const port = process.env.PORT || config.port
 
