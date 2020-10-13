@@ -1,7 +1,7 @@
 /*
  * @Author: liushuhao
  * @Date: 2020-08-16 21:51:18
- * @LastEditTime: 2020-08-16 23:34:07
+ * @LastEditTime: 2020-10-12 14:56:04
  * @LastEditors: liushuhao
  * @Description:  数据库封装
  * @FilePath: /test-koa/config/db/db.js
@@ -25,11 +25,13 @@ module.exports = {
     CollectionSchemaname: '',
     
     init: function (name , params) {
-        this.Collectionname = name;
-        this.Collectionnames = this.Collectionname;
-        this.CollectionSchemaname = `${name}Schema`;
-        this.CollectionSchemaname = new mongoose.Schema(params);
-        this.Collectionname = mongoose.model(this.Collectionnames, this.CollectionSchemaname, this.Collectionnames);
+        if( !this.CollectionSchemaname ) {
+            this.Collectionname = name;
+            this.Collectionnames = this.Collectionname;
+            this.CollectionSchemaname = `${name}Schema`;
+            this.CollectionSchemaname = new mongoose.Schema(params);
+            this.Collectionname = mongoose.model(this.Collectionnames, this.CollectionSchemaname, this.Collectionnames);
+        }
     },
 
     // 初始化验证
@@ -42,12 +44,18 @@ module.exports = {
     },
     //1.增
     //1）插入多条数据：单个数据可以是json对象，多个数据放在数组中；
-    insertMany: function (aryjson, callback) {
-        console.log(this.Collectionname, 'this.Collectionname');
+    insertMany: function (aryjson) {
         if (this.InitialVerification()) {
-            this.Collectionname.insertMany(aryjson, function (err, docs) {
-                callback(err, docs);
+            return new Promise((resolve, reject) => {
+                this.Collectionname.insertMany(aryjson, function (err, docs) {
+                    if (err) {
+                        resolve(err);
+                    } else {
+                        resolve(docs)
+                    }
+                })
             })
+
         }
         else {
             console.log('请使用init 方法 初始化数据库');
@@ -121,7 +129,26 @@ module.exports = {
             console.log('请使用init 方法 初始化数据库');
             return false;
         }
-
+    },
+    findOne: function (filter){
+        if (this.InitialVerification()) {
+            return new Promise((resolve, reject) => {
+                console.log(this.Collectionname, 'Collectionname');
+                console.log(filter, 'fa');
+                let result = this.Collectionname.findOne(filter, function(err, person){
+                    // console.log(err, 'err');
+                    console.log(person, 'person');
+                    if(err) {
+                        resolve(err)
+                    } else{
+                        resolve(person)
+                    }
+                });
+            })
+        } else{
+            console.log('请使用init 方法 初始化数据库');
+            return false;
+        }
     },
     //2）获取满足条件的数据总个数
     count: function (filter, callback) {
