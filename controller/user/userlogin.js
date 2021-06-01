@@ -8,6 +8,7 @@
  */
 
 const db = require('../../config/db/db.js');
+let JwtUtil = require('../../common/jwt.js');
 
 class users {
     constructor(data) {
@@ -20,19 +21,50 @@ class users {
             'phone': Number,
             'userimg': String,
             'sex': String,
-            'name': String
+            'name': String,
+            'pwd': String,
+            'roles': Array,
+            'introduction': String,
+            'avatar' : String
         }
         db.init('user', userparams);
     }
     async login(data) {
-        console.log(data, 'data');
         let result = await db.findOne(data);
         let datas = [];
-        console.log(result, 'resultsss');
         if (result) {
             datas.push(result);
         }
         return datas;
+    }
+    async register(data) {
+        const datas = {
+            username: data.username,
+            pwd: data.pwd,
+            introduction: '',
+            avatar: '',
+            roles: [
+                {
+                    img: ''
+                }
+            ]
+        }
+        let result = await db.insertMany(datas);
+        return result;
+    }
+
+    async userinfos(data) {
+       let jwt = new JwtUtil(data);
+       const userid = jwt.decodes();
+       const findobj = {
+           _id : userid.data
+       }
+       let result = await db.findOne(findobj);
+       let datas = [];
+       if (result) {
+           datas.push(result);
+       }
+       return datas;
     }
 }
 
