@@ -1,7 +1,7 @@
 /*
  * @Author: liushuhao
  * @Date: 2020-08-15 20:30:43
- * @LastEditTime: 2021-05-26 17:15:04
+ * @LastEditTime: 2021-08-09 20:23:50
  * @LastEditors: liushuhao
  * @Description: 
  * @FilePath: /test-koa/app.js
@@ -30,6 +30,7 @@ const JwtUtil = require('./common/jwt.js')
 const userrouter = require('./routes/users');
 const apirouter = require('./routes/api.js');
 const articlesprRuter = require('./routes/articles.js')
+const mockRouter = require('./routes/mock.js')
 const koaBody = require('koa-body');
 const IO = require( 'koa-socket' )
 
@@ -37,9 +38,9 @@ const IO = require( 'koa-socket' )
 const port = process.env.PORT || config.port
 const io = new IO();
 
+
 // error handler
 onerror(app)
-
 app.use(cors())
 app.use(koaBody({
   multipart: true,
@@ -48,28 +49,32 @@ app.use(koaBody({
   }
 }))
 app.use(async (ctx, next) => {
-  console.log(ctx, 'ctx');
   if (ctx.request.method === 'GET') {
     await next();
   } else {
+    await next();
   // 我这里登陆和注册请求去掉了，其他的多有请求都需要进行token校验 
-    if (ctx.url != '/api/userlogin' && ctx.url != '/api/register' && ctx.url != '/api/jsonp') {
-        let token = ctx.request.header['x-access-token'];
-        let jwt = new JwtUtil(token);
-        let result = jwt.verifyToken();
-        if (result == 'err') {
-            console.log(result);
-            ctx.body = {
-              code: 403,
-              message: '登录已过期,请重新登录',
-              success: false
-            };
-        } else {
-          await next();
-        }
-    } else {
-      await next()
-    }
+    // if (ctx.url != '/api/userlogin' 
+    //     && ctx.url != '/api/register' 
+    //     && ctx.url != '/api/jsonp'
+    //     && ctx.url !== '/api/test1') {
+    //     // let token = ctx.request.header['x-access-token'];
+    //     // let jwt = new JwtUtil(token);
+    //     // let result = jwt.verifyToken();
+    //     if (result == 'err') {
+    //         // console.log(result);
+    //         // ctx.body = {
+    //         //   code: 403,
+    //         //   message: '登录已过期,请重新登录',
+    //         //   success: false
+    //         // };
+    //       await next();
+    //     } else {
+    //       await next();
+    //     }
+    // } else {
+    //   await next()
+    // }
   }
 });
 app.use(bodyparser())
@@ -96,6 +101,7 @@ io.on('connection', function (socket) {
 
 router.use('/userrouter', userrouter);
 router.use('/api', apirouter);
+router.use('/api/mock', mockRouter);
 router.use('/api/articles', articlesprRuter);
 
 

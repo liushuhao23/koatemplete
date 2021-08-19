@@ -1,7 +1,7 @@
 /*
  * @Author: liushuhao
  * @Date: 2020-08-15 20:30:43
- * @LastEditTime: 2021-05-26 14:16:40
+ * @LastEditTime: 2021-06-05 19:33:11
  * @LastEditors: liushuhao
  * @Description: 
  * @FilePath: /test-koa/routes/api.js
@@ -115,5 +115,21 @@ router.get('/jsonp', async function (ctx, next) {
   console.log(cb, 'cb')
   ctx.body = `${cb}(${JSON.stringify(title)})`;
   return
+})
+
+router.post('/test1', async function (ctx, next) {
+  // console.log(ctx.query, '1111');
+  // const { cb } =ctx.query;
+  const title = {
+    name: '111'
+  }
+  ctx.body = {
+    code: 200,
+    data: {
+      list: title  
+    },
+    message: '成功',
+    success: true
+  };
 })
 module.exports = router.routes();
